@@ -41,9 +41,6 @@ def cli(ctx, db_file):
 @click.argument("entry", type=str)
 @click.pass_context
 def add(ctx, entry):
-    print(entry)
-    print(ctx.obj)
-    print(date.today())
     con = connect_db(ctx.obj["db_file"])
 
     cur = con.cursor()
