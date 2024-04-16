@@ -41,6 +41,9 @@ def cli(ctx, db_file):
 @click.argument("entry", type=str)
 @click.pass_context
 def add(ctx, entry):
+    """
+    Add an entry for today
+    """
     con = connect_db(ctx.obj["db_file"])
 
     cur = con.cursor()
@@ -50,6 +53,48 @@ def add(ctx, entry):
     else:
         next_id = last_id + 1
     cur.execute("INSERT INTO timesheet VALUES(?, ?, ?)", (next_id, date.today(), entry))
+    con.commit()
+    # con = sqlite3.connect(ctx.obj['db_file'])
+
+
+@cli.command()
+@click.pass_context
+def add_yesterday(ctx, entry):
+    """
+    Add an entry for yesterday
+    """
+    con = connect_db(ctx.obj["db_file"])
+
+    cur = con.cursor()
+    last_id = cur.execute("SELECT max(id) FROM timesheet").fetchone()[0]
+    if last_id is None:
+        next_id = 0
+    else:
+        next_id = last_id + 1
+    cur.execute(
+        "INSERT INTO timesheet VALUES(?, ?, ?)",
+        (next_id, date.today() - timedelta(1), entry),
+    )
+    con.commit()
+
+
+@cli.command()
+@click.argument("date", type=str)
+@click.argument("entry", type=str)
+@click.pass_context
+def add_date(ctx, date, entry):
+    """
+    Add an entry on a specific date in YYYY-MM-DD format
+    """
+    con = connect_db(ctx.obj["db_file"])
+
+    cur = con.cursor()
+    last_id = cur.execute("SELECT max(id) FROM timesheet").fetchone()[0]
+    if last_id is None:
+        next_id = 0
+    else:
+        next_id = last_id + 1
+    cur.execute("INSERT INTO timesheet VALUES(?, ?, ?)", (next_id, date, entry))
     con.commit()
     # con = sqlite3.connect(ctx.obj['db_file'])
 
