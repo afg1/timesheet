@@ -59,6 +59,7 @@ def add(ctx, entry):
 
 @cli.command()
 @click.pass_context
+@click.argument("entry", type=str)
 def add_yesterday(ctx, entry):
     """
     Add an entry for yesterday
